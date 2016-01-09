@@ -1,24 +1,90 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
-ext {
-    PUBLISH_GROUP_ID = 'com.blundell'
-    PUBLISH_ARTIFACT_ID = 'my-example-android-library'
-    PUBLISH_VERSION = '0.0.2'
-}
 
-android {
-    compileSdkVersion 20
-    buildToolsVersion "20.0.0"
 
-    defaultConfig {
-        applicationId "com.blundell.example.android.library"
-        minSdkVersion 14
-        targetSdkVersion 20
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
     }
 }
 
-dependencies {
-    // Whatever your dependencies are
+
+allprojects {
+    repositories {
+        jcenter()
+    }
 }
 
-apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
+group = 'co.example' // Change this to match your package name
+version = '1.0.0' // this is just a placeholder. the version number is appended in the defaultConfig
+
+
+android {
+
+    lintOptions {
+        abortOnError false
+    }
+
+
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        def versionMajor = 1
+        def versionMinor = 0
+        def versionPatch = 0
+
+        versionCode versionMajor * 100 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        version = versionName
+
+        archivesBaseName = "name-of-aar-$versionName"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles 'proguard-rules.pro'
+            debuggable false
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles 'proguard-rules.pro'
+            versionNameSuffix "-debug"
+            debuggable true
+        }
+    }
+
+    testOptions{
+        unitTests{
+        }
+    }
+}
+
+
+
+dependencies {
+	//dependencies here
+}
+
+
+ext {
+    PUBLISH_GROUP_ID = 'co.example'
+    PUBLISH_ARTIFACT_ID = 'lib'
+    PUBLISH_VERSION = version
+}
+
+apply from: 'android-release-aar.gradle'
